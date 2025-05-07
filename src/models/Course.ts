@@ -1,5 +1,5 @@
 
-import { sequelize } from "../database/seeders"
+import { sequelize } from "../database"
 import { DataTypes, Model, Optional } from 'sequelize'
 
 export interface Course {

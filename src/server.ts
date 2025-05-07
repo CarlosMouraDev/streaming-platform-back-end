@@ -1,5 +1,5 @@
 import express from 'express'
-import { sequelize } from './database/seeders'
+import { sequelize } from './database'
 import { adminJs, adminJsRouter } from './adminjs'
 
 const app = express()
