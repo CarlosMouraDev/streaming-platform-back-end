@@ -48,6 +48,7 @@ export const episodeService = {
                 episodeId
             }
         })
+        return watchTime
     },
 
     setWatchTime: async ({ userId, episodeId, seconds }: WatchTimeAttributes) => {
