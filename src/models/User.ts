@@ -5,7 +5,7 @@ import { EpisodeInstance } from "./Episode"
 
 type CheckPasswordCallback = (err?: Error, isSame?: boolean) => void
 
-export interface User {
+export interface UserM {
     id: number
     firstName: string
     lastName: string
@@ -17,15 +17,15 @@ export interface User {
 }
 
 export interface UserCreationAttributes
-  extends Optional<User, 'id'> {}
+  extends Optional<UserM, 'id'> {}
 
 export interface UserInstance
-  extends Model<User, UserCreationAttributes>, User {
+  extends Model<UserM, UserCreationAttributes>, UserM {
     Episodes?: EpisodeInstance[]
     checkPassword: (password: string, callbackfn: CheckPasswordCallback) => void
   }
 
-export const User = sequelize.define<UserInstance, User>('users', {
+export const User = sequelize.define<UserInstance, UserM>('users', {
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -75,11 +75,11 @@ export const User = sequelize.define<UserInstance, User>('users', {
 })
 
 // @ts-ignore
-User.prototype.checkPassword = function (password: string, callbackfn: CheckPasswordCallback) {
+User.prototype.checkPassword = function (password: string, callbackfn: (err: Error | undefined, isSame: boolean) => void) {
   // @ts-ignore
   bcrypt.compare(password, this.password, (err, isSame) => {
     if (err) {
-      callbackfn(err)
+      callbackfn(err, false)
     } else {
       callbackfn(err, isSame)
     }

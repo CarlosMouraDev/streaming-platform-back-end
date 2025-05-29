@@ -37,37 +37,60 @@ export const userService = {
         const user = await User.create(attributes)
         return user
     },
+
+    updatePassword: async (id: string | number, password: string) => {
+        const [affectedRows, updatedUsers] = await User.update({
+            password
+        }, {
+            where: { id },
+            individualHooks: true,
+            returning: true
+        })
+
+        return updatedUsers[0]
+    },
+
+    update: async (id: number, attributes: {
+        firstName: string
+        lastName: string
+        phone: string
+        birth: Date
+        email: string
+    }) => {
+        const [affectedRows, updatedUsers] = await User.update(attributes, { where: { id }, returning: true })
+        return updatedUsers[0]
+    },
     getKeepWatchingList: async (id: number) => {
-    const userWithWatchingEpisodes = await User.findByPk(id, {
-      include: {
-        association: 'Episodes',
-        attributes: [
-          'id',
-          'name',
-          'synopsis',
-          'order',
-          ['video_url', 'videoUrl'],
-          ['seconds_long', 'secondsLong'],
-          ['course_id', 'courseId']
-        ],
-        include: [{
-          association: 'Course',
-          attributes: [
+        const userWithWatchingEpisodes = await User.findByPk(id, {
+        include: {
+            association: 'Episodes',
+            attributes: [
             'id',
             'name',
             'synopsis',
-            ['thumbnail_url', 'thumbnailUrl']
-          ],
-          as: 'course'
-        }],
-        through: {
-          as: 'watchTime',
-          attributes: [
-            'seconds',
-            ['updated_at', 'updatedAt']
-          ]
+            'order',
+            ['video_url', 'videoUrl'],
+            ['seconds_long', 'secondsLong'],
+            ['course_id', 'courseId']
+            ],
+            include: [{
+            association: 'Course',
+            attributes: [
+                'id',
+                'name',
+                'synopsis',
+                ['thumbnail_url', 'thumbnailUrl']
+            ],
+            as: 'course'
+            }],
+            through: {
+            as: 'watchTime',
+            attributes: [
+                'seconds',
+                ['updated_at', 'updatedAt']
+            ]
+            }
         }
-      }
     })
 
     if (!userWithWatchingEpisodes) throw new Error('Usuário não encontrado.')
